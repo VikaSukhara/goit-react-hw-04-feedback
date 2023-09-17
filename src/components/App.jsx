@@ -1,61 +1,66 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { Statistics } from './Statistics/Statistics';
 import { FeedbackOption } from './Feedback/Feedback';
 import { Section } from './Section/Section';
-import {Notification} from './Notification';
-import { useState } from "react";
+import { Notification } from './Notification';
 
-
-const App = ( ) =>{
+export const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-}
 
-  options = [
-    { key: 1, name: 'good' },
-    { key: 2, name: 'neutral' },
-    { key: 3, name: 'bad' },
+  const handlerGoodIncrement = () => {
+    setGood(prevItems => prevItems + 1);
+    console.log(options);
+  };
+
+  const handlerNeutralIncrement = () => {
+    setNeutral(prevItems => prevItems + 1);
+  };
+
+  const handlerBadIncrement = () => {
+    setBad(prevItems => prevItems + 11);
+  };
+
+  const options = [
+    { key: 1, name: 'good', function: handlerGoodIncrement },
+    { key: 2, name: 'neutral', function: handlerNeutralIncrement },
+    { key: 3, name: 'bad', function: handlerBadIncrement },
   ];
 
-  handleGoodIncrement = option => {
-    this.setState(prevState => ({ [option.name]: prevState[option.name] + 1 }));
+  const countTotalFeedback = () => {
+    return good + neutral + bad;
   };
 
-  countTotalFeedback = () => {
-    return this.state.good + this.state.neutral + this.state.bad;
+  const countPositiveFeedbackPercentage = () => {
+    return Math.round((good / countTotalFeedback()) * 100);
   };
 
-  countPositiveFeedbackPercentage = () => {
-    return Math.round((this.state.good / this.countTotalFeedback()) * 100);
-  };
+  return (
+    <div style={{ padding: '10px 50px' }}>
+      <Section title={'Please leave feedback'}>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {options.map(option => (
+            <FeedbackOption
+              key={option.key}
+              option={option}
+              onLeaveFeedback={option.function}
+            />
+          ))}
+        </div>
 
-  render() {
-    return (
-      <div style={{padding: '10px 50px'}}>
-       <Section title={"Please leave feedback"}>
-        <div style={{display: 'flex', gap: '10px'}}>
-        {this.options.map(option => (
-          <FeedbackOption
-            key={option.key}
-            option={option}
-            onLeaveFeedback={this.handleGoodIncrement}
+        {countTotalFeedback() === 0 ? (
+          <Notification message="There is no feedback" />
+        ) : (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={countTotalFeedback()}
+            percentage={countPositiveFeedbackPercentage()}
           />
-        ))}
-      </div>
-
-
-{
-(this.countTotalFeedback() === 0)? <Notification message="There is no feedback"/> :
-        <Statistics
-          good={this.state.good}
-          neutral={this.state.neutral}
-          bad={this.state.bad}
-          total={this.countTotalFeedback()}
-          percentage={this.countPositiveFeedbackPercentage()}
-        />}
+        )}
       </Section>
-      </div>
-    );
-  }
-}
+    </div>
+  );
+};
