@@ -19,7 +19,7 @@ export const App = () => {
   };
 
   const handlerBadIncrement = () => {
-    setBad(prevItems => prevItems + 11);
+    setBad(prevItems => prevItems + 1);
   };
 
   const options = [
